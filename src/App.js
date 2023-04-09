@@ -11,22 +11,26 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { playersStore } from './context/PlayersContext';
+import { appStore } from './context/appContext';
 
 function App() {
   const [login, setLogin] = useState(false)
   const updatePlayersData = playersStore(state => state.updatePlayersData);
+
+  const updateUid = appStore(state => state.updateUid);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (res) => {
       // console.log("res", res)
       if (res) {
         updatePlayersData(res.uid)
-
+        updateUid(res.uid)
         console.log("login");
         setLogin(true)
       } else {
         console.log("logout");
         setLogin(false)
+        updateUid(false)
       }
       // setError("");
       // setLoading(false);

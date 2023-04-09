@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider, useTheme } from '@mui/material';
 import MaterialReactTable from 'material-react-table';
 import { MenuItem } from '@mui/material';
 import { playersStore } from "../context/PlayersContext";
+import UpdatePlayer from "./UpdatePlayer";
 
 
 //nested data is ok, see accessorKeys in ColumnDef below
@@ -19,100 +20,6 @@ const PlayersList = () => {
         console.log(playersData)
     }, [playersData])
     // 
-    const data = [
-
-        {
-
-            name: {
-
-                firstName: 'John',
-
-                lastName: 'Doe',
-
-            },
-
-            address: '261 Erdman Ford',
-
-            city: 'East Daphne',
-
-            state: 'Kentucky',
-
-        },
-
-        {
-
-            name: {
-
-                firstName: 'Jane',
-
-                lastName: 'Doe',
-
-            },
-
-            address: '769 Dominic Grove',
-
-            city: 'Columbus',
-
-            state: 'Ohio',
-
-        },
-
-        {
-
-            name: {
-
-                firstName: 'Joe',
-
-                lastName: 'Doe',
-
-            },
-
-            address: '566 Brakus Inlet',
-
-            city: 'South Linda',
-
-            state: 'West Virginia',
-
-        },
-
-        {
-
-            name: {
-
-                firstName: 'Kevin',
-
-                lastName: 'Vandy',
-
-            },
-
-            address: '722 Emie Stream',
-
-            city: 'Lincoln',
-
-            state: 'Nebraska',
-
-        },
-
-        {
-
-            name: {
-
-                firstName: 'Joshua',
-
-                lastName: 'Rolluffs',
-
-            },
-
-            address: '32188 Larkin Turnpike',
-
-            city: 'Charleston',
-
-            state: 'South Carolina',
-
-        },
-
-    ];
-
 
 
     //should be memoized or stable
@@ -120,7 +27,20 @@ const PlayersList = () => {
     const columns = useMemo(
 
         () => [
-
+            {
+                accessorKey: 'pid',
+                enableHiding: false,
+                enableColumnActions: false,
+                enablePinning: false,
+                header: 'pid',
+            },
+            {
+                accessorKey: 'vid',
+                enableHiding: false,
+                enableColumnActions: false,
+                enablePinning: false,
+                header: 'vid',
+            },
             {
 
                 accessorKey: 'name', //access nested data with dot notation
@@ -273,31 +193,25 @@ const PlayersList = () => {
                     columns={columns}
 
                     data={playersData}
-
+                    initialState={{ columnVisibility: { pid: false, vid: false }, isFullScreen: true }}
                     // enableRowSelection
 
                     // enableColumnOrdering
                     enableFullScreenToggle={true}
-                    isFullScreen={true}
                     enablePinning
                     enableColumnActions
 
                     enableRowActions
                     renderRowActionMenuItems={({ row }) => [
 
-                        <MenuItem key="edit" onClick={() => console.info('Edit')}>
-
-                            Edit
-
+                        <MenuItem key="vote" onClick={() => console.info(row.original)}>
+                            <UpdatePlayer playerData={row.original} />
                         </MenuItem>,
 
-                        <MenuItem key="delete" onClick={() => console.info('Delete')}>
 
-                            Delete
-
-                        </MenuItem>,
 
                     ]}
+
                 />
 
             </ThemeProvider>

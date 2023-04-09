@@ -33,12 +33,14 @@ export const AddplayerDB = async (data) => {
 
 //  get all players
 const emptyRating = {
-    "pace": 0,
-    "shooting": 0,
-    "passing": 0,
-    "dribbling": 0,
-    "defending": 0,
-    "physicality": 0,
+    pace: 0,
+    shooting: 0,
+    passing: 0,
+    dribbling: 0,
+    defending: 0,
+    physicality: 0,
+    total: 0,
+    vid: false
 }
 export const getAllPlayers = async (uid) => {
     const players = []
@@ -53,9 +55,9 @@ export const getAllPlayers = async (uid) => {
             const rating = votes.filter(vote => vote.pid === doc.id)
 
             if (rating.length > 0) {
-                players.push({ name: doc.data().name, ...rating[0] });
+                players.push({ name: doc.data().name, ...rating[0], total: 0, pid: doc.id });
             } else {
-                players.push({ name: doc.data().name, ...emptyRating });
+                players.push({ name: doc.data().name, ...emptyRating, pid: doc.id });
             }
         });
         return players
@@ -83,13 +85,13 @@ export const getAllVotesUidDB = async (uid) => {
     const q = query(votesRef, where("uid", "==", uid));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-        userVotes.push({ ...doc.data() });
+        userVotes.push({ ...doc.data(), vid: doc.id });
     });
     return userVotes;
 }
 
 // update vote by vid
-export const updateOrderDB = async (vId, updatedData) => {
+export const updateVoteDB = async (vId, updatedData) => {
     try {
         const voteRef = doc(votesRef, vId);
         await updateDoc(voteRef, {

@@ -1,148 +1,198 @@
-import { Fragment, useState, useContext } from "react";
+import { Fragment, useState, useEffect } from "react";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import {
     Input,
-    Button,
-    Dialog,
-    DialogHeader,
-    DialogBody,
-    DialogFooter,
-    Switch,
-    Option,
-    Select
 } from "@material-tailwind/react";
 import axios from "axios";
 import InputRange from "./InputRange";
-import PlayersConfig from "../context/PlayersConfig";
-import AppConfig from "../context/AppConfig";
-const UpdatePlayer = ({ playerAppId }) => {
-    // const { players, setPlayers, player, setPlayer, setName, setPace, setShooting, setPassing, setDribbling, setDefending, setPhysicality } = useContext(PlayersConfig);
-    const { players, player, resetPlayer, LoadPlayers, LoadPlayer, setName, setStatus, setTcolor, setPace, setShooting, setPassing, setDribbling, setDefending, setPhysicality } = useContext(PlayersConfig);
-    const { config, setNTeams } = useContext(AppConfig);
+import { appStore } from "../context/appContext";
+import { AddvoteDB, updateVoteDB } from "../db/db";
+import { playersStore } from "../context/PlayersContext";
+import Notifications from "./Notifications";
+
+const UpdatePlayer = ({ playerData }) => {
+    const uid = appStore(state => state.uid);
+    const updatePlayersData = playersStore(state => state.updatePlayersData);
     const [open, setOpen] = useState(false);
+    const [player, setPlayer] = useState(playerData);
+    const [notifiy, setNotifiy] = useState({
+        open: false,
+        vertical: 'top',
+        horizontal: 'center',
+        msg: "Hello, welcome to Xtend.",
+        type: "success"
+    })
+    useEffect(() => {
+        const total = (parseInt(playerData.pace) + parseInt(playerData.shooting) + parseInt(playerData.passing) + parseInt(playerData.dribbling) + parseInt(playerData.defending) + parseInt(playerData.physicality)) / 6
+        setPlayer({
+            name: playerData.name,
+            pace: parseInt(playerData.pace),
+            shooting: parseInt(playerData.shooting),
+            passing: parseInt(playerData.passing),
+            dribbling: parseInt(playerData.dribbling),
+            defending: parseInt(playerData.defending),
+            physicality: parseInt(playerData.physicality),
+            total: parseInt(total)
+        })
+    }, [])
 
-    const handleOpen = () => {
-        // console.log(["Player", playerAppId])
-        // console.log(players)
-        // console.log(players[playerAppId])
-        // setPlayer(players[playerAppId])
-        LoadPlayer(players[playerAppId])
-        setOpen(!open)
+    const handleClickOpen = () => {
+        setOpen(true);
     };
 
-    const setPlayername = (e) => {
-        const { value } = e.target;
-        // console.log(value);
-        setName(value);
-    }
-    const fetchAllPlayers = async () => {
-        try {
-            const res = await axios.get("https://x-tend.solutions/fantasy/api/");
-            LoadPlayers(res.data);
-            alert("Done");
-
-        } catch (err) {
-            // alert("Something went wrong get");
-            console.log(err);
-        }
+    const handleClose = () => {
+        setOpen(false);
     };
+    // const setPlayername = (e) => {
+    //     const { value } = e.target;
+    //     // console.log(value);
+    //     setName(player);
+    // }
+    // const fetchAllPlayers = async () => {
+    //     try {
+    //         const res = await axios.get("https://x-tend.solutions/fantasy/api/");
+    //         LoadPlayers(res.data);
+    //         alert("Done");
+
+    //     } catch (err) {
+    //         // alert("Something went wrong get");
+    //         console.log(err);
+    //     }
+    // };
 
     const handleUpdatePlayer = async (e) => {
         e.preventDefault();
 
-        try {
-            // await axios.put(`https://x-tend.solutions/fantasy/api/${player.id}`, player);
+        if (playerData.vid) {
 
-            await axios.put(`https://x-tend.solutions/fantasy/api/`, player);
-            // navigate("/");
-            await fetchAllPlayers();
-            // setNTeams(config.nTeams);
-            // handleOpen();
-        } catch (err) {
-            console.log(err);
-            // setError(true);
+            updateVoteDB(playerData.vid, {
+                ...player,
+            }).then(() => {
+
+                setNotifiy({
+                    open: true,
+                    vertical: 'buttom',
+                    horizontal: 'left',
+                    msg: "Thank you for your vote.",
+                    type: "success"
+                })
+
+                updatePlayersData(uid)
+                handleClose()
+            }).catch(err => {
+                console.log(err);
+            });
+        } else {
+            AddvoteDB({
+                uid,
+                ...player,
+                pid: playerData.pid
+            }).then(() => {
+                setNotifiy({
+                    open: true,
+                    vertical: 'buttom',
+                    horizontal: 'left',
+                    msg: "Thank you for your vote.",
+                    type: "success"
+                })
+                updatePlayersData(uid)
+                handleClose()
+            }).catch(err => {
+                console.log(err);
+            });
         }
+
+    };
+    // 
+    const setPace = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, pace: val }
+        });
+        _setTotal(val + player.shooting + player.passing + player.dribbling + player.defending + player.physicality);
+    };
+    const setShooting = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, shooting: val }
+        });
+        _setTotal(player.pace + val + player.passing + player.dribbling + player.defending + player.physicality);
+    };
+    const setPassing = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, passing: val }
+        });
+        _setTotal(player.pace + player.shooting + val + player.dribbling + player.defending + player.physicality);
+    };
+    const setDribbling = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, dribbling: val }
+        });
+        _setTotal(player.pace + player.shooting + player.passing + val + player.defending + player.physicality);
+    };
+    const setDefending = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, defending: val }
+        });
+        _setTotal(player.pace + player.shooting + player.passing + player.dribbling + val + player.physicality);
+    };
+    const setPhysicality = (val) => {
+        setPlayer((prevState) => {
+            return { ...prevState, physicality: val }
+        });
+        _setTotal(player.pace + player.shooting + player.passing + player.dribbling + player.defending + val);
+    };
+    const _setTotal = (total) => {
+        let t = (total) / 6;
+        setPlayer((prevState) => {
+            return { ...prevState, total: parseInt(t) }
+        });
     };
     return (
-        <Fragment>
-            <p className="cursor-pointer text-blue-400 hover:text-blue-600 underline inline-block lg:top-0 relative top-2"
-                onClick={handleOpen}
-            >Edit</p>
-            {/* <Button onClick={handleOpen} variant="gradient" className={btnStyle} color="indigo">
-                Update Player
-            </Button> */}
-            <Dialog open={open} handler={handleOpen} size="xl"
-                className="lg:max-w-[50%]  lg:min-w-[50%] lg:h-fit h-[75%] lg:overflow-hidden overflow-y-scroll"
-                dismiss={
-                    {
-                        enabled: false,
-                        escapeKey: false,
-                        referencePointerDown: false,
-                        outsidePointerDown: false,
-                        ancestorScroll: false,
-                        bubbles: false,
-                    }
-
-                }
+        <div>
+            <Notifications state={notifiy} setState={setNotifiy} />
+            <Button variant="" onClick={handleClickOpen}>
+                Vote
+            </Button>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
             >
-                <DialogHeader>Player Attributes</DialogHeader>
-                <DialogBody divider>
-                    <div className="flex flex-wrap w-full">
-                        <div className="md:w-6/12 sm:w-full w-full md:pd-0 sm:pb-3 pb-3 sm:pr-3 pr-0">
-                            <Input label="Name" onChange={(e) => setPlayername(e)} value={player.name} />
-                        </div>
-                        <div className="md:w-4/12 sm:w-9/12 w-full">
-                            <Select label="T-Shirt" value={player.tcolor}>
-                                <Option onClick={() => setTcolor("black")} value={"black"}><p className="text-gray-900">Black</p></Option>
-                                <Option onClick={() => setTcolor("white")} value={"white"}><p className="text-gray-600">White</p></Option>
-                                <Option onClick={() => setTcolor("red")} value={"red"}><p className="text-red-900">Red</p></Option>
-                                <Option onClick={() => setTcolor("blue")} value={"blue"}><p className="text-light-blue-700">Blue</p></Option>
-                                <Option onClick={() => setTcolor("black-white")} value={"black-white"}><p className="text-gray-900 inline-block">Black-</p><p className="text-gray-600 inline-block">White</p></Option>
-                            </Select>
-                        </div>
-                        <div className="flex flex-col md:w-2/12 sm:w-3/12 w-full items-center relative md:left-4 left-0">
-                            <label className="font-bold text-gray-900 text-center">
-                                Available
-                            </label>
-                            {
-                                player.status && <Switch defaultChecked onClick={() => setStatus(false)} />
-                            }
-                            {
-                                !player.status && <Switch onClick={() => setStatus(true)} />
-                            }
+                <DialogTitle id="alert-dialog-title">
+                    Player Attributes
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <div className="flex flex-wrap w-full">
+                            <div className="md:w-12/12 sm:w-full w-full md:pd-0 sm:pb-3 pb-3 sm:pr-3 pr-0 ">
+                                <Input label="Name" onChange={(e) => { }} value={player.name} disabled className="text-black" />
+                            </div>
 
+                            <InputRange inputName={"Pace"} playerPower={player.pace} disabled={false} method={setPace} />
+                            <InputRange inputName={"Shooting"} playerPower={player.shooting} disabled={false} method={setShooting} />
+                            <InputRange inputName={"Passing"} playerPower={player.passing} disabled={false} method={setPassing} />
+                            <InputRange inputName={"Dribbling"} playerPower={player.dribbling} disabled={false} method={setDribbling} />
+                            <InputRange inputName={"Defending"} playerPower={player.defending} disabled={false} method={setDefending} />
+                            <InputRange inputName={"Physicality"} playerPower={player.physicality} disabled={false} method={setPhysicality} />
+                            <InputRange inputName={"OVERALL"} playerPower={player.total} disabled={true} method={() => { }} />
 
                         </div>
-
-
-
-                        <InputRange inputName={"Pace"} playerPower={player.pace} disabled={false} method={setPace} />
-                        <InputRange inputName={"Shooting"} playerPower={player.shooting} disabled={false} method={setShooting} />
-                        <InputRange inputName={"Passing"} playerPower={player.passing} disabled={false} method={setPassing} />
-                        <InputRange inputName={"Dribbling"} playerPower={player.dribbling} disabled={false} method={setDribbling} />
-                        <InputRange inputName={"Defending"} playerPower={player.defending} disabled={false} method={setDefending} />
-                        <InputRange inputName={"Physicality"} playerPower={player.physicality} disabled={false} method={setPhysicality} />
-                        <InputRange inputName={"OVERALL"} playerPower={player.total} disabled={true} method={() => { }} />
-
-                    </div>
-                </DialogBody>
-                <DialogFooter>
-                    <Button
-                        variant="text"
-                        color="red"
-                        onClick={() => {
-                            resetPlayer()
-                            handleOpen()
-                        }}
-                        className="mr-1"
-                    >
-                        <span>Cancel</span>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="error" size="medium">Cancel</Button>
+                    <Button onClick={handleUpdatePlayer} autoFocus variant="contained" color="secondary" size="medium">
+                        Vote
                     </Button>
-                    <Button variant="gradient" color="blue" onClick={handleUpdatePlayer}>
-                        <span>Update</span>
-                    </Button>
-                </DialogFooter>
+                </DialogActions>
             </Dialog>
-        </Fragment >
+        </div>
+
     );
 }
 
