@@ -11,7 +11,7 @@ import {
 
 
 import AddPlayer from "./AddPlayer";
-import PlayersList from "./PlayersList";
+// import PlayersList from "./PlayersList";
 import PopoverInfo from "./PopoverInfo";
 
 const Nav = () => {
@@ -26,7 +26,7 @@ const Nav = () => {
 
   const navList = (
     <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      <PlayersList />
+      {/* <PlayersList /> */}
       <PopoverInfo btnName={"Settings"} info={"Comming Soon."} />
       <PopoverInfo btnName={"How to play"} info={"Figure out by yourself"} />
     </ul>

@@ -1,25 +1,25 @@
-.board{
-    background-size: 100% 100%;
-    height: 480px;
-    /* margin-bottom: 140px; */
-    max-width: 490px;
-    margin-left: auto;
-    display: block;
-    margin-right: auto;
-    position: relative;
+.board {
+  background-size: 100% 100%;
+  height: 480px;
+  /* margin-bottom: 140px; */
+  max-width: 490px;
+  margin-left: auto;
+  display: block;
+  margin-right: auto;
+  position: relative;
 
-    background-image: url(./assets/img/board2.png);
-    /* background:url(./assets/img/board.png) no-repeat center; */
-    background-color: transparent;
+  background-image: url(./assets/img/board2.png);
+  /* background:url(./assets/img/board.png) no-repeat center; */
+  background-color: transparent;
 }
 
-.player{
-    display: inline-block;
-    /* margin-bottom: 100px; */
+.player {
+  display: inline-block;
+  /* margin-bottom: 100px; */
 }
 
-.bg-img{
-/* background-image: url(./assets/img/bg.jpg); 
+.bg-img {
+  /* background-image: url(./assets/img/bg.jpg); 
     background-repeat: no-repeat; 
     background-position: right; 
     background-attachment: scroll;       
@@ -35,22 +35,22 @@
 
 }
 
-.board-bg{
-    background-color: rgb(75,177,117, 0.2);
-    color: #fff;
+.board-bg {
+  background-color: rgb(75, 177, 117, 0.2);
+  color: #fff;
 }
 
-.input-range-red{
-    accent-color: #F55050;
+.input-range-red {
+  accent-color: #F55050;
 }
 
 .playerCard input {
-    accent-color: yellowgreen;
+  accent-color: yellowgreen;
 }
 
 .list-show ul {
-    position: relative !important;
-    top : 0 !important;
+  position: relative !important;
+  top: 0 !important;
 }
 
 
@@ -59,15 +59,17 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
+
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 10px solid #f3f3f3; 
-  border-top: 10px solid #383636; 
+  border: 10px solid #f3f3f3;
+  border-top: 10px solid #383636;
   border-radius: 50%;
   animation: spinner 1.5s linear infinite;
   position: fixed;
@@ -81,15 +83,97 @@
 }
 
 .spinner-container {
-        height: 132vh;
-    width: 250vh;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 999999;
-    background-color: rgb(25,62,68,0.5);
+  height: 132vh;
+  width: 250vh;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999999;
+  background-color: rgb(25, 62, 68, 0.5);
 
 
+}
+
+/* login */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+  padding: 70px 30px;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin: 0 0 30px;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+}
+
+.user-box {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.user-box input {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+
+.user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.user-box input:focus~label,
+.user-box input:valid~label {
+  top: -20px;
+  left: 0;
+  color: #03a9f4;
+  font-size: 12px;
+}
+
+button[type="submit"] {
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background: #03a9f4;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 30px;
+  margin-top: 40px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+button[type="submit"]:hover {
+  background: #fff;
+  color: #03a9f4;
 }
