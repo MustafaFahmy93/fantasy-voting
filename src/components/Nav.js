@@ -37,7 +37,7 @@ const Nav = () => {
       <div className="container mx-auto flex items-center justify-between text-white">
         <Typography
           as="a"
-          href="/"
+          href="https://x-tend.solutions/fantasy/"
           variant="small"
           className="mr-4 cursor-pointer py-1.5 font-logo text-4xl"
         >

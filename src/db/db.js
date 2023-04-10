@@ -30,18 +30,29 @@ export const AddplayerDB = async (data) => {
         .then((res) => { })
         .catch((err) => { console.log(err) })
 }
+// delete player
+export const delplayerDB = async (pid) => {
 
-//  get all players
-const emptyRating = {
-    pace: 0,
-    shooting: 0,
-    passing: 0,
-    dribbling: 0,
-    defending: 0,
-    physicality: 0,
-    total: 0,
-    vid: false
+    try {
+        const playerRef = doc(playersRef, pid);
+        await deleteDoc(playerRef);
+    } catch (error) {
+        console.error(error);
+    }
 }
+export const updatePlayerDB = async (pid, updatedData) => {
+    try {
+        const playerRef = doc(playersRef, pid);
+        await updateDoc(playerRef, {
+            ...updatedData,
+            lastUpdate: serverTimestamp()
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
 export const getAllPlayers = async (uid) => {
     const players = []
     const querySnapshot = await getDocs(playersRef);
@@ -49,6 +60,17 @@ export const getAllPlayers = async (uid) => {
 
     return getAllVotesUidDB(uid).then((votes) => {
         querySnapshot.forEach((doc) => {
+            //  get all players
+            const emptyRating = {
+                pace: 0,
+                shooting: 0,
+                passing: 0,
+                dribbling: 0,
+                defending: 0,
+                physicality: 0,
+                total: 0,
+                vid: false
+            }
             // doc.data() is never undefined for query doc snapshots
             // console.log(doc.id, " => ", doc.data());
             // players.push({ ...doc.data() });
