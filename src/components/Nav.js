@@ -38,6 +38,7 @@ const Nav = () => {
         <Typography
           as="a"
           href="https://x-tend.solutions/fantasy/"
+          target="_blank"
           variant="small"
           className="mr-4 cursor-pointer py-1.5 font-logo text-4xl"
         >

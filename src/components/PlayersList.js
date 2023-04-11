@@ -16,9 +16,9 @@ const PlayersList = () => {
     // useEffect(() => {
     //     updatePlayersData()
     // }, [])
-    useEffect(() => {
-        console.log(playersData)
-    }, [playersData])
+    // useEffect(() => {
+    //     console.log(playersData)
+    // }, [playersData])
     // 
 
 

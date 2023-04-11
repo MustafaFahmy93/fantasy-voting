@@ -12,25 +12,35 @@ import {
 import { auth } from "./firebase";
 import { playersStore } from './context/PlayersContext';
 import { appStore } from './context/appContext';
+import Notifications from './components/Notifications';
+import { muiStore } from './context/muiContext';
+import LoadingSpinner from './components/LoadingSpinner';
 
 function App() {
+  const notify = muiStore(state => state.notify)
+  const setNotify = muiStore(state => state.setNotify)
   const [login, setLogin] = useState(false)
   const updatePlayersData = playersStore(state => state.updatePlayersData);
 
   const updateUid = appStore(state => state.updateUid);
+  const updateIsLoading = appStore(state => state.updateIsLoading);
+  const isLoading = appStore(state => state.isLoading);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (res) => {
       // console.log("res", res)
       if (res) {
-        updatePlayersData(res.uid)
+        setLogin(true)
         updateUid(res.uid)
         console.log("login");
-        setLogin(true)
+        updateIsLoading(true)
+        updatePlayersData(res.uid)
+        updateIsLoading(false)
       } else {
         console.log("logout");
         setLogin(false)
         updateUid(false)
+        updateIsLoading(false)
       }
       // setError("");
       // setLoading(false);
@@ -38,10 +48,14 @@ function App() {
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  useEffect(() => {
+    console.log(isLoading)
+  }, [isLoading])
 
   return (
     <div className="App">
+      {isLoading && <LoadingSpinner />}
+      <Notifications state={notify} setState={setNotify} />
       <AppProvide >
         {
           login ? <PlayersProvide ><Fantasy /></PlayersProvide> : <Login />

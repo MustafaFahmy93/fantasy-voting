@@ -1,6 +1,5 @@
 
 import { useContext } from "react";
-import AppConfig from "../context/AppConfig";
 import { FcGoogle } from "react-icons/fc"
 import { AiOutlineGoogle } from "react-icons/ai"
 import { auth } from "../firebase";
@@ -9,31 +8,32 @@ import {
     signInWithRedirect
 
 } from "firebase/auth";
+import { appStore } from "../context/appContext";
+import LoadingSpinner from "./LoadingSpinner";
+
 const Login = () => {
-    const { config, setLogin } = useContext(AppConfig);
-    const handelLogin = () => {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        if (config.user === user && config.pass === pass) {
-            setLogin(true);
-        }
-    }
+
+    const updateIsLoading = appStore(state => state.updateIsLoading)
+    const isLoading = appStore(state => state.isLoading)
     const googleSignIn = () => {
         const provider = new GoogleAuthProvider();
-        console.log(provider)
+        // console.log(provider)
+        updateIsLoading(true)
         signInWithRedirect(auth, provider)
             .then(data => {
                 console.log("data", data);
 
-
+                updateIsLoading(false)
             })
             .catch(error => {
 
                 console.log("error", error);
+                updateIsLoading(false)
             });
     };
     return (
         <div>
+            {isLoading && <LoadingSpinner />}
             <div className="bg-img"></div>
             <div className="login-box">
                 {/* <h2>Login</h2> */}

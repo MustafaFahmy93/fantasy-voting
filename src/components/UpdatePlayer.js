@@ -8,25 +8,19 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {
     Input,
 } from "@material-tailwind/react";
-import axios from "axios";
 import InputRange from "./InputRange";
 import { appStore } from "../context/appContext";
 import { AddvoteDB, updateVoteDB } from "../db/db";
 import { playersStore } from "../context/PlayersContext";
-import Notifications from "./Notifications";
+import { muiStore } from "../context/muiContext";
 
 const UpdatePlayer = ({ playerData }) => {
+    const setNotify = muiStore(state => state.setNotify)
     const uid = appStore(state => state.uid);
     const updatePlayersData = playersStore(state => state.updatePlayersData);
     const [open, setOpen] = useState(false);
     const [player, setPlayer] = useState(playerData);
-    const [notifiy, setNotifiy] = useState({
-        open: false,
-        vertical: 'top',
-        horizontal: 'center',
-        msg: "Hello, welcome to Xtend.",
-        type: "success"
-    })
+
     useEffect(() => {
         const total = (parseInt(playerData.pace) + parseInt(playerData.shooting) + parseInt(playerData.passing) + parseInt(playerData.dribbling) + parseInt(playerData.defending) + parseInt(playerData.physicality)) / 6
         setPlayer({
@@ -68,23 +62,30 @@ const UpdatePlayer = ({ playerData }) => {
     const handleUpdatePlayer = async (e) => {
         e.preventDefault();
 
-        if (playerData.vid) {
+        if (playerData.vid !== false) {
 
             updateVoteDB(playerData.vid, {
                 ...player,
             }).then(() => {
 
-                setNotifiy({
+                setNotify({
                     open: true,
                     vertical: 'buttom',
                     horizontal: 'left',
-                    msg: "Thank you for your vote.",
+                    msg: "Your vote has been updated successfully.",
                     type: "success"
                 })
 
                 updatePlayersData(uid)
                 handleClose()
             }).catch(err => {
+                setNotify({
+                    open: true,
+                    vertical: 'buttom',
+                    horizontal: 'left',
+                    msg: "Something went wrong, please refresh your browser and try again.",
+                    type: "error"
+                })
                 console.log(err);
             });
         } else {
@@ -93,7 +94,7 @@ const UpdatePlayer = ({ playerData }) => {
                 ...player,
                 pid: playerData.pid
             }).then(() => {
-                setNotifiy({
+                setNotify({
                     open: true,
                     vertical: 'buttom',
                     horizontal: 'left',
@@ -103,57 +104,66 @@ const UpdatePlayer = ({ playerData }) => {
                 updatePlayersData(uid)
                 handleClose()
             }).catch(err => {
+                setNotify({
+                    open: true,
+                    vertical: 'buttom',
+                    horizontal: 'left',
+                    msg: "Something went wrong, please refresh your browser and try again.",
+                    type: "error"
+                })
                 console.log(err);
             });
         }
 
     };
     // 
+    const attrWeight = 2
+    const totalDvider = 8
     const setPace = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, pace: val }
         });
-        _setTotal(val + player.shooting + player.passing + player.dribbling + player.defending + player.physicality);
+        _setTotal(val + player.shooting + (player.passing * attrWeight) + (player.dribbling * attrWeight) + player.defending + player.physicality);
     };
     const setShooting = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, shooting: val }
         });
-        _setTotal(player.pace + val + player.passing + player.dribbling + player.defending + player.physicality);
+        _setTotal(player.pace + val + (player.passing * attrWeight) + (player.dribbling * attrWeight) + player.defending + player.physicality);
     };
     const setPassing = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, passing: val }
         });
-        _setTotal(player.pace + player.shooting + val + player.dribbling + player.defending + player.physicality);
+        _setTotal(player.pace + player.shooting + (val * attrWeight) + (player.dribbling * attrWeight) + player.defending + player.physicality);
     };
     const setDribbling = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, dribbling: val }
         });
-        _setTotal(player.pace + player.shooting + player.passing + val + player.defending + player.physicality);
+        _setTotal(player.pace + player.shooting + (player.passing * attrWeight) + (val * attrWeight) + player.defending + player.physicality);
     };
     const setDefending = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, defending: val }
         });
-        _setTotal(player.pace + player.shooting + player.passing + player.dribbling + val + player.physicality);
+        _setTotal(player.pace + player.shooting + (player.passing * attrWeight) + (player.dribbling * attrWeight) + val + player.physicality);
     };
     const setPhysicality = (val) => {
         setPlayer((prevState) => {
             return { ...prevState, physicality: val }
         });
-        _setTotal(player.pace + player.shooting + player.passing + player.dribbling + player.defending + val);
+        _setTotal(player.pace + player.shooting + (player.passing * attrWeight) + (player.dribbling * attrWeight) + player.defending + val);
     };
     const _setTotal = (total) => {
-        let t = (total) / 6;
+        let t = (total) / totalDvider;
         setPlayer((prevState) => {
             return { ...prevState, total: parseInt(t) }
         });
     };
     return (
         <div>
-            <Notifications state={notifiy} setState={setNotifiy} />
+
             <Button variant="" onClick={handleClickOpen}>
                 Vote
             </Button>

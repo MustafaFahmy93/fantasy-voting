@@ -17,8 +17,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Notifications from "./Notifications";
 import { appStore } from "../context/appContext";
+import { muiStore } from "../context/muiContext";
 
 const AddPlayer = ({ btnStyle }) => {
+    const setNotify = muiStore(state => state.setNotify)
     const uid = appStore(state => state.uid);
     const updatePlayersData = playersStore(state => state.updatePlayersData)
     // const { player, LoadPlayers, resetPlayer, setName, setStatus, setTcolor, setPace, setShooting, setPassing, setDribbling, setDefending, setPhysicality } = useContext(PlayersConfig);
@@ -54,7 +56,7 @@ const AddPlayer = ({ btnStyle }) => {
             AddplayerDB(player).then(() => {
                 // alert(player.name + " has been added to the players list");
                 handleOpen()
-                setNotifiy({
+                setNotify({
                     open: true,
                     vertical: 'buttom',
                     horizontal: 'left',
@@ -68,7 +70,16 @@ const AddPlayer = ({ btnStyle }) => {
                 setName("")
                 setTshirt("black")
                 // setMode(2)
-            }).catch((err) => console.log(err))
+            }).catch((err) => {
+                console.log(err)
+                setNotify({
+                    open: true,
+                    vertical: 'buttom',
+                    horizontal: 'left',
+                    msg: "Something went wrong, please refresh your browser and try again.",
+                    type: "error"
+                })
+            })
 
             // await fetchAllPlayers();
         } catch (err) {
@@ -78,17 +89,11 @@ const AddPlayer = ({ btnStyle }) => {
         }
     };
     // 
-    const [notifiy, setNotifiy] = useState({
-        open: false,
-        vertical: 'top',
-        horizontal: 'center',
-        msg: "Hello, welcome to Xtend.",
-        type: "success"
-    })
+
     return (
 
         <div>
-            <Notifications state={notifiy} setState={setNotifiy} />
+
             <Button onClick={() => {
                 setHideBoard(true)
                 setMode(1)

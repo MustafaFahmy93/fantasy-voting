@@ -27,3 +27,5 @@ yarn-error.log*
 # drift code
 /src/data/dist.py
 /src/data/dist2.py
+
+.env
