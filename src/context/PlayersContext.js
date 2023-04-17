@@ -15,11 +15,11 @@ export const playersStore = create(
 
         }
         ), {
-        name: 'xtend-players-storage', // unique name
+        name: 'xtend-players-store', // unique name
         storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
         // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
         // partialize: (state) => ({}),
-        partialize: (state) => ({ playersData: state.playersData }),
+        // partialize: (state) => ({ playersData: state.playersData }),
     }
     )
 
